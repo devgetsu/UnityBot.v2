@@ -5,15 +5,13 @@ using Telegram.Bot.Types.Enums;
 using UnityBot.Bot.Models.Entities;
 using UnityBot.Bot.Models.Enums;
 using UnityBot.Bot.Services.ReplyKeyboards;
+using UnityBot.Bot.Services.UserServices;
 using Update = Telegram.Bot.Types.Update;
 
 namespace UnityBot.Bot.Services.Handlers;
 
 public partial class BotUpdateHandler
 {
-    private const string LINK = "https://t.me/effect_mehnat";
-    private const string BotLINK = "https://t.me/effect_mehnat_bot";
-    private const string MainChanel = "-1002230870026";
     private async Task HandleMessageAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
     {
         var messageType = message.Type switch
@@ -37,78 +35,47 @@ public partial class BotUpdateHandler
 
     private async Task HandleTextMessageAsnyc(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
     {
+        try
+        {
+
+            if (message.Text == "/start")
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var _userRepository = scope.ServiceProvider.GetRequiredService<IUserService>();
+
+                    await _userRepository.UpdateUserStatus(message.Chat.Id, UserStatus.MainPage, cancellationToken);
+
+                    var msg = await client.SendTextMessageAsync(
+                            chatId: message.Chat.Id,
+                            text: $"\r\n<strong>Assalomu alaykum {message.From.FirstName} {message.From.LastName}, \"EFFECT | Katta mehnat bozori\" kanali uchun e'lon yaratuvchi botiga xush kelibsiz.</strong>\r\n\r\n \"EFFECT | Katta mehnat bozori\" kanali - ish izlayotgan odamlarga vakansiyalarni, ish beruvchilarga esa ishchilarni topishda yordam beradi. Qolaversa bir qator boshqa yo'nalishlarni ham qollab quvvatlaydi.\r\r\n\n<strong>Yo'nalishlar:</strong>\r\n• \"🏢 Ish joylash\" - ishchi topish uchun.\r\n• \"\U0001f9d1🏻‍💼 Rezyume joylash\" - ish topish uchun.\r\n• \"\U0001f9d1🏻 Shogirt kerak\" - shogirt topish uchun.\r\n• \"\U0001f9d1🏻‍🏫 Ustoz kerak\" - ustoz topish uchun.\r\n• \"🎗 Sherik kerak\" - sherik topish uchun.\r\n\r\n<strong>E'lon berish uchun yo'nalishni tanlang 👇</strong>",
+                            replyMarkup: await InlineKeyBoards.ForMainState(),
+                            parseMode: ParseMode.Html,
+                            cancellationToken: cancellationToken);
+
+                    var isChanged = await _userRepository.UpdateUserShouldDeleteId(message.Chat.Id, msg.MessageId, cancellationToken);
+                    return;
+                };
+            }
+
+
+            else if (!string.IsNullOrWhiteSpace(message.Text.ToString()))
+            {
+                await HandleRandomTextAsync(client, message, cancellationToken);
+            };
+        }
+        catch
+        {
+            return;
+        }
+    }
+
+    private async Task HandleRandomTextAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
+    {
         throw new NotImplementedException();
     }
 
-    private async Task HandleNotImplementedMessageAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        try
-        {
 
-            await client.SendTextMessageAsync(
-                        chatId: message.Chat.Id,
-                        text: $"<strong>Assalomu alaykum, \"EFFECT | Katta mehnat bozori\" kanali uchun e'lon yaratuvchi botiga xush kelibsiz.\r\n\r\n \"EFFECT | Katta mehnat bozori\" - ish izlayotgan odamlarga vakansiyalarni, ish beruvchilarga esa ishchilarni topishda yordam beradi. Qolaversa bir qator boshqa yo'nalishlarni ham qollab quvvatlaydi.</strong>",
-                        parseMode: ParseMode.Html, replyMarkup: await InlineKeyBoards.ForMainState(),
-                        cancellationToken: cancellationToken);
-            return;
-        }
-        catch (Exception ex)
-        {
-            return;
-        }
-    }
-    private async Task HandleLocationMessageAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        try
-        {
-
-            var letitude = message.Location.Latitude;
-            var longitude = message.Location.Longitude;
-
-            await client.SendTextMessageAsync(
-                   chatId: message.Chat.Id,
-                   text: $"Your Latitude {letitude} and Longitude {longitude}",
-                   cancellationToken: cancellationToken);
-            return;
-        }
-        catch
-        {
-            return;
-        }
-    }
-    private async Task HandlePhotoMessageAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        try
-        {
-
-            await client.SendTextMessageAsync(
-                   chatId: message.Chat.Id,
-                   text: "You Send Unknown Message",
-                   cancellationToken: cancellationToken);
-            return;
-        }
-        catch
-        {
-            return;
-        }
-    }
-    private async Task HandleStickerMessageAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        try
-        {
-
-            await client.SendTextMessageAsync(
-                   chatId: message.Chat.Id,
-                   text: "You Send Sticker Message",
-                   cancellationToken: cancellationToken);
-            return;
-        }
-        catch
-        {
-            Console.WriteLine("Err StickerMessage asyc");
-            return;
-        }
-    }
     public async Task HandleCallbackQueryAsync(ITelegramBotClient client, CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
         var myMessage = callbackQuery.Data switch
@@ -120,8 +87,6 @@ public partial class BotUpdateHandler
             "sherik_kerak" => HandleSherikKerakAsync(client, callbackQuery.Message, cancellationToken),
             "togrri" => TogriElonJoylashAsync(client, callbackQuery.Message, cancellationToken),
             "notogrri" => NotogriElonJoylashAsync(client, callbackQuery.Message, cancellationToken),
-            "joyla" => SentToMainChanelAsync(client, callbackQuery.Message, cancellationToken),
-            "skip" => SkipFromModeratorsAsync(client, callbackQuery.Message, cancellationToken),
             "noinfo" => NoAdditionalInfo(client, callbackQuery.Message, cancellationToken),
             "talabaekan" => TalabaEkan(client, callbackQuery.Message, cancellationToken),
             "talabaemas" => TalabaEmas(client, callbackQuery.Message, cancellationToken),
@@ -139,100 +104,8 @@ public partial class BotUpdateHandler
         }
     }
 
-    private async Task NotogriElonJoylashAsync(ITelegramBotClient client, Message? message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
     private async Task NoAdditionalInfo(ITelegramBotClient client, Message? message, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
-
-    private async Task HandleSherikKerakAsync(ITelegramBotClient client, Message? message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async Task HandleUstozkerakAsync(ITelegramBotClient client, Message? message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async Task HandleShogirtKerakAsync(ITelegramBotClient client, Message? message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async Task HandleRezumeJoylashAsync(ITelegramBotClient client, Message? message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async Task HandleIshJoylashAsync(ITelegramBotClient client, Message? message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-
-    #region Clears
-    private async Task ClearMessageMethod(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-    private async Task ClearUpdateMethod(ITelegramBotClient botClient, CallbackQuery callback, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-    private async Task HandleClearAllReplyKeysAsync(ITelegramBotClient client, Message message, UserModel user, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-    #endregion
-
-    #region Checker
-
-    public async Task HandleTextCorrectAsync(ITelegramBotClient _client, Message message, CancellationToken cancellation)
-    {
-        throw new NotImplementedException();
-
-    }
-    #endregion
-
-    #region TalabaUchun
-    private async Task TalabaEkan(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async Task TalabaEmas(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-    #endregion
-
-    #region ElonUchun
-    private async Task TogriElonJoylashAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-
-    }
-
-    #endregion
-
-    #region ModeratorlarUchun
-    private async Task SentToMainChanelAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-
-
-    }
-
-    private async Task SkipFromModeratorsAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-
-    }
-    #endregion
-
 }

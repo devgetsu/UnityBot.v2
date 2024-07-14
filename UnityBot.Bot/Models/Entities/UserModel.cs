@@ -12,7 +12,7 @@ namespace UnityBot.Bot.Models.Entities
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public UserStatus Status { get; set; }
-        public long ShouldDeleteMessage { get; set; } = 0;
+        public int ShouldDeleteMessage { get; set; } = 0;
         public List<long> OldAds { get; set; } = new List<long>();
     }
 }

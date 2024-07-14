@@ -48,6 +48,11 @@ namespace UnityBot.Bot.Services.UserServices
             return await _users.ToListAsync(cancellationToken);
         }
 
+        public async Task<UserModel> GetUser(long chatId, CancellationToken cancellationToken)
+        {
+            return await _users.FirstOrDefaultAsync(x => x.Chatid == chatId || x.Userid == chatId) ?? throw new Exception();
+        }
+
         public async Task<short> UpdateUserStatus(long userId, UserStatus status, CancellationToken cancellation)
         {
             var user = await _users.FirstOrDefaultAsync(x => x.Userid == userId || x.Chatid == userId);
@@ -89,7 +94,7 @@ namespace UnityBot.Bot.Services.UserServices
             return 22;
         }
 
-        public async Task<short> UpdateUserShouldDeleteId(long userId, long shouldDeleteId, CancellationToken cancellation)
+        public async Task<short> UpdateUserShouldDeleteId(long userId, int shouldDeleteId, CancellationToken cancellation)
         {
             var user = await _users.FirstOrDefaultAsync(x => x.Userid == userId || x.Chatid == userId);
             if (user == null)

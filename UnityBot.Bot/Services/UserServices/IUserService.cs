@@ -8,6 +8,7 @@ namespace UnityBot.Bot.Services.UserServices
     {
         public Task<short> CreateUser(UserModel user, CancellationToken cancellation);
         public Task<IEnumerable<UserModel>> GetAllUsers(CancellationToken cancellationToken);
+        public Task<UserModel> GetUser(long chatId, CancellationToken cancellationToken);
         public Task<short> UpdateUserStatus(long userId, UserStatus status, CancellationToken cancellation);
         public Task<short> UpdateUserProperties(long userId, UserViewModel newUser, CancellationToken cancellation);
         public Task<short> UpdateUserOldAds(long userId, long adsId, CancellationToken cancellation);
