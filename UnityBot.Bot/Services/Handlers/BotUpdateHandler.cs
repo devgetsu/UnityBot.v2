@@ -10,22 +10,10 @@ namespace UnityBot.Bot.Services.Handlers
 {
     public partial class BotUpdateHandler : IUpdateHandler
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        public BotUpdateHandler(IServiceScopeFactory serviceScopeFactory)
-        {
-            _serviceScopeFactory = serviceScopeFactory;
-        }
-        public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
         public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             try
             {
-
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var _userRepository = scope.ServiceProvider.GetRequiredService<IUserService>();
@@ -79,18 +67,6 @@ namespace UnityBot.Bot.Services.Handlers
             {
                 Console.WriteLine("UpdateAysncda xatolik : {0}", ex.Message.ToString());
                 return;
-            }
-        }
-
-        private async Task HandleUnknownMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-        {
-            try
-            {
-                Console.WriteLine("Not impelemented mesage");
-            }
-            catch
-            {
-                Console.WriteLine("HandleUnknownMessageAsync error");
             }
         }
     }

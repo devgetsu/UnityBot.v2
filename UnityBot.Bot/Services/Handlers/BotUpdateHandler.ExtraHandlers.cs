@@ -75,6 +75,20 @@ namespace UnityBot.Bot.Services.Handlers
                 return;
             }
         }
-
+        private async Task HandleUnknownMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        {
+            try
+            {
+                Console.WriteLine("Not impelemented mesage");
+            }
+            catch
+            {
+                Console.WriteLine("HandleUnknownMessageAsync error");
+            }
+        }
+        public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
