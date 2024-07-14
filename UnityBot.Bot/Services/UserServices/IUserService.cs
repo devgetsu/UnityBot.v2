@@ -12,7 +12,7 @@ namespace UnityBot.Bot.Services.UserServices
         public Task<short> UpdateUserStatus(long userId, UserStatus status, CancellationToken cancellation);
         public Task<short> UpdateUserProperties(long userId, UserViewModel newUser, CancellationToken cancellation);
         public Task<short> UpdateUserOldAds(long userId, long adsId, CancellationToken cancellation);
-        public Task<short> UpdateUserShouldDeleteId(long userId, long shouldDeleteId, CancellationToken cancellation);
+        public Task<short> UpdateUserShouldDeleteId(long userId, int shouldDeleteId, CancellationToken cancellation);
 
     }
 }

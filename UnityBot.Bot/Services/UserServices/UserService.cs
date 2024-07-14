@@ -50,7 +50,7 @@ namespace UnityBot.Bot.Services.UserServices
 
         public async Task<UserModel> GetUser(long chatId, CancellationToken cancellationToken)
         {
-            return await _users.FirstOrDefaultAsync(x => x.Chatid == chatId || x.Userid == chatId) ?? throw new Exception();
+            return await _users.FirstOrDefaultAsync(x => x.Chatid == chatId || x.Userid == chatId) ?? throw new NotImplementedException();
         }
 
         public async Task<short> UpdateUserStatus(long userId, UserStatus status, CancellationToken cancellation)
