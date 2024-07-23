@@ -24,16 +24,10 @@ namespace UnityBot.Bot.Services.Handlers
                         throw new InvalidOperationException("Both Message.From and CallbackQuery.From are null.");
                     }
 
-                    var chatId = update.Message?.Chat?.Id;
-                    if (chatId == null)
-                    {
-                        throw new InvalidOperationException("Chat Id is null.");
-                    }
-
                     var model = new UserModel()
                     {
                         Userid = fromUser.Id,
-                        Chatid = chatId.Value,
+                        Chatid = fromUser.Id,
                         Username = fromUser.Username,
                         FirstName = fromUser.FirstName,
                         LastName = fromUser.LastName,
@@ -54,8 +48,8 @@ namespace UnityBot.Bot.Services.Handlers
 
                 try
                 {
-                    await ClearMessageMethod(botClient, update.Message, cancellationToken);
-                    await ClearUpdateMethod(botClient, update.CallbackQuery, cancellationToken);
+                    //await ClearMessageMethod(botClient, update.Message, cancellationToken);
+                    //await ClearUpdateMethod(botClient, update.CallbackQuery, cancellationToken);
                     await handler;
                 }
                 catch (Exception ex)

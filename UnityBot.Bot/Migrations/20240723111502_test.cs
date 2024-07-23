@@ -24,8 +24,9 @@ namespace UnityBot.Bot.Migrations
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
+                    Messages = table.Column<List<string>>(type: "text[]", nullable: false),
                     ShouldDeleteMessage = table.Column<int>(type: "integer", nullable: false),
-                    OldAds = table.Column<List<int>>(type: "integer[]", nullable: false)
+                    OldAds = table.Column<List<long>>(type: "bigint[]", nullable: false)
                 },
                 constraints: table =>
                 {

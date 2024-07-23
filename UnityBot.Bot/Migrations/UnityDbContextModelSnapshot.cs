@@ -39,9 +39,13 @@ namespace UnityBot.Bot.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<List<int>>("OldAds")
+                    b.Property<List<string>>("Messages")
                         .IsRequired()
-                        .HasColumnType("integer[]");
+                        .HasColumnType("text[]");
+
+                    b.Property<List<long>>("OldAds")
+                        .IsRequired()
+                        .HasColumnType("bigint[]");
 
                     b.Property<int>("ShouldDeleteMessage")
                         .HasColumnType("integer");

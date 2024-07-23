@@ -72,7 +72,21 @@ public partial class BotUpdateHandler
 
     private async Task HandleRandomTextAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+
+        using (var scope = _serviceScopeFactory.CreateScope())
+        {
+            var _userRepository = scope.ServiceProvider.GetRequiredService<IUserService>();
+
+            var user = await _userRepository.GetUser(message.Chat.Id, cancellationToken);
+
+            var status = (int)user.Status;
+
+            if (status > 49 && status < 60)
+            {
+                await HandleSherikKerakAsync(client, message, cancellationToken);
+            }
+
+        }
     }
 
 

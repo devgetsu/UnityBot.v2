@@ -12,7 +12,7 @@ using UnityBot.Bot.Persistanse;
 namespace UnityBot.Bot.Migrations
 {
     [DbContext(typeof(UnityDbContext))]
-    [Migration("20240712060434_test")]
+    [Migration("20240723111502_test")]
     partial class test
     {
         /// <inheritdoc />
@@ -42,9 +42,13 @@ namespace UnityBot.Bot.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<List<int>>("OldAds")
+                    b.Property<List<string>>("Messages")
                         .IsRequired()
-                        .HasColumnType("integer[]");
+                        .HasColumnType("text[]");
+
+                    b.Property<List<long>>("OldAds")
+                        .IsRequired()
+                        .HasColumnType("bigint[]");
 
                     b.Property<int>("ShouldDeleteMessage")
                         .HasColumnType("integer");

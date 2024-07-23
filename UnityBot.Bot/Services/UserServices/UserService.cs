@@ -107,5 +107,30 @@ namespace UnityBot.Bot.Services.UserServices
             return 22;
         }
 
+        public async Task<short> AddToListMessages(long userId, string message, CancellationToken cancellation)
+        {
+            var user = await _users.FirstOrDefaultAsync(x => x.Userid == userId || x.Chatid == userId);
+            if (user == null)
+            {
+                return 24;
+            }
+
+            user.Messages.Add(message);
+            await _context.SaveChangesAsync(cancellation);
+            return 22;
+        }
+
+        public async Task<short> ClearListMessages(long userId, string message, CancellationToken cancellation)
+        {
+            var user = await _users.FirstOrDefaultAsync(x => x.Userid == userId || x.Chatid == userId);
+            if (user == null)
+            {
+                return 24;
+            }
+
+            user.Messages.Clear();
+            await _context.SaveChangesAsync(cancellation);
+            return 22;
+        }
     }
 }
